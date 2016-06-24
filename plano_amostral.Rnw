@@ -196,10 +196,10 @@ Em que:\\
 <<echo=FALSE,results='hide'>>=
 sapply(c("sp", "maptools", "spdep", "rgdal"), require, char=T)
 ##### lendo o mapa do estado de Curitiba por setor censitário
-cwb<-readOGR("/home/felipe/Documentos/Consultoria/Isabel/Curitiba/4106902.shp"
+cwb<-readOGR("4106902.shp"
             ,layer="4106902")
 ##### lendo o mapa de Curitiba por bairro
-bairro<-readOGR("/home/felipe/Documentos/Consultoria/Isabel/DIVISA_DE_BAIRROS.shp"
+bairro<-readOGR("DIVISA_DE_BAIRROS.shp"
                ,layer='DIVISA_DE_BAIRROS')
 
 @

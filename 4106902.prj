@@ -1,0 +1,6 @@
+&REM Universal Transverse Mercator, Zone 22
+&REM UTM-22S
+PROJECTION UTM
+UNITS METERS
+ZONE 22S
+PARAMETERS
