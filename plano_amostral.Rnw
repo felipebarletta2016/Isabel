@@ -138,10 +138,10 @@ intervalo de confiança para a estimativa pontual de $\hat{P}$:\\
 
 \indent
 <<echo=FALSE, results='hide'>>=
-ic<-function (p, nn, conf = 0.95){
+ic<-function (p, nn, conf = 0.99){
  #n <- length(x)
  q <- 1-p
- quantis <- qnorm(.975)
+ quantis <- qnorm(.995)
  ic <- c(p - quantis * sqrt((p*q)/nn),p + quantis * sqrt((p*q)/nn))
  return(ic)
 }
