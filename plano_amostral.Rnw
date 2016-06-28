@@ -148,6 +148,7 @@ ic<-function (p, nn, conf = 0.99){
 p <- 0.37
 nn <- 184
 IC <- ic(p,nn)
+IC
 @
 
 $$
@@ -194,8 +195,11 @@ Em que:\\
 \end{itemize}
 
 <<echo=FALSE,results='hide'>>=
+#install.packages('sp')
 sapply(c("sp", "maptools", "spdep", "rgdal"), require, char=T)
-##### lendo o mapa do estado de Curitiba por setor censitário
+setwd("C:/Users/Ale/Desktop/R STUDIO/Isabel-master")
+
+#### lendo o mapa do estado do PR por setor censitário
 cwb<-readOGR("4106902.shp"
             ,layer="4106902")
 ##### lendo o mapa de Curitiba por bairro
