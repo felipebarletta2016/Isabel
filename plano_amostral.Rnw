@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 \documentclass[12pt]{article}
 \usepackage{setspace}
 %\documentclass[a4paper,12pt]{article}
@@ -635,3 +636,562 @@ Viena, Austria. \url{http://www.R-project.org/}.
 \end{thebibliography}
 
 \end{document}
+=======
+\documentclass[12pt]{article}
+\usepackage{setspace}
+%\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+%\usepackage[brazil,brazilian]{babel}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{graphics}
+\setlength{\parindent}{1.0cm}
+%\setlength{\textheight}{10.5in}
+%\setlength{\textwidth}{6in}
+\setlength{\oddsidemargin}{0.1in}
+\setlength{\evensidemargin}{0.0in}
+\addtolength{\topmargin}{-1.0in}
+%\setlength{\parskip}{0.1in}
+%\parskip=15pt
+%\setlength{\unitlength}{0.01in}
+%\usepackage{Sweave}
+%\usepackage[pdftex]{hyperref}
+\usepackage[bottom=2cm,top=3cm,left=3cm,right=2cm]{geometry}
+\usepackage{placeins}
+\usepackage{float}
+\usepackage{hyperref}
+
+
+%\pagestyle{empty}
+
+\title{\textbf{Plano Amostral}}
+\author{Felipe Barletta}
+%\date{}
+
+\begin{document}
+\onehalfspacing
+\maketitle
+\indent
+%\pagestyle{headings}
+
+<<setup, include = FALSE>>=
+  tema <- knit_theme$get("acid")
+knit_theme$set(tema)
+opts_chunk$set(size = "footnotesize",
+               cache = TRUE,
+               tidy = FALSE,
+               comment = NA,
+               warning = FALSE,
+               message = FALSE,
+               fig.align = "center",
+               out.width = "1\\linewidth",
+               fig.width = 7,
+               fig.height = 5,
+               dpi = 100,
+               fig.show = "hold",
+              # fig.path = "Figuras/",
+               fig.pos = "H",
+               background = "#E6E6FA")
+require(knitr)
+require(latticeExtra)
+require(MASS)
+require(xtable)
+@
+
+\section{Amostra por domicílios}
+
+\indent
+
+O objetivo do estudo, que é verificar o comportamento acerca do descarte
+de resíduos de cozinha adequadamente no bairro de Santa Felicidade em
+Curitiba-PR.\\
+\indent
+Como há uma limitação operacional para a coleta dos dados, optou-se por
+simular vários cenários de amostragem para que a pesquisadora adote o mais
+viável planejamento amostral dentro de suas condições de aplicação dos
+questionários e captação das informações.\\
+\indent
+O planejamento amostral será realizado com a premissa de uma
+amostra por domicílio dentro da região geográfica que abrange a população
+alvo da pesquisa.\\
+\indent
+A população alvo são todos os domicílios residenciais do bairro de Santa
+Felicidade em Curitiba-PR. Desta área será coletada a amostra do estudo.\\
+\indent
+Portanto a unidade amostral será a residência e
+a unidade observacional será a pessoa entrevistada(responsável pelo domicílio). \\
+\indent
+Serão simulados dois cenários:
+\begin{itemize}
+  \item Amostragem Estratificada
+  \item Amostragem aleatória simples sem reposição
+\end{itemize}
+
+Em cada cenário, o tamanho da amostra será alocado com diferentes erros amostrais:
+\begin{itemize}
+  \item 0,03
+  \item 0,05
+  \item 0,06
+  \item 0,08
+  \item 0,10
+\end{itemize}
+
+\subsection{Estimativa dos parâmetros}
+\indent
+
+Por convenção denotamos $N$ para o tamanho populacional e $n$ o tamanho
+amostral.\\
+\indent
+Antes da descrição dos tipos de amostragem usados neste estudo, vamos definir
+e estimar os parâmetros de interesse neste estudo, para isso consideraremos
+os resultados de uma estudo piloto realizado em um colégio estadual situado
+no bairro de Santa Felicidade, sobre o descarte de óleo residual de cozinha.
+Na questão $3$ usada para coleta dos dados da amostra piloto, perguntava-se:\\
+"\textit{3)  Como sua família descarta o resíduo de óleo após seu uso?}"\\
+\indent
+Vamos discutir a estimação de uma proporção $P$, ou seja, a proporção de respostas 
+da pergunta acima que disseram que armazenam o óleo residual para entrega em ponto 
+de coleta. Quem respondeu diferente desta resposta será considerada a
+estimativa da proporção complementar, $Q$, ou $1-P$.\\
+\indent
+Dos 254 questionários que compuseram a amostra piloto, foram excluídos, para
+cálculo das estimativas, 60 que responderam "\textit{Não sei}" e 1 que
+não respondeu. Dos entrevistados $68$ responderam que separam o óleo
+residual para coleta, portanto as estimativas ficaram da seguinte forma:\\
+
+ $$ \hat{P} = 68/184 = 0,37 $$
+ $$ \hat{Q} = 1-\hat{P} = 0,63 $$
+
+Utilizando a aproximação de normalidade assintótica teremos o seguinte
+intervalo de confiança para a estimativa pontual de $\hat{P}$:\\
+
+\begin{equation}
+   IC(\hat{P}) = \left( \hat{P}-z_\alpha \sqrt{(1-f)\frac{\hat{P} \hat{Q}}{n-1}}; \hat{P}+z_\alpha \sqrt{(1-f)\frac{\hat{P} \hat{Q}}{n-1}} \right)
+\end{equation}
+ Como ainda não sabemos o tamanho da nossa população vamos considerar nosso
+ $N$, que se refere ao tamanho populacional, como infinito. Então a fração amostral $f=n/N$
+ tenderá a zero. Fazendo os cálculo teremos um intervalo de confiança com
+ $95\%$ de confiança igual à:
+
+\indent
+<<echo=FALSE, results='hide'>>=
+ic<-function (p, nn, conf = 0.99){
+ #n <- length(x)
+ q <- 1-p
+ quantis <- qnorm(.995)
+ ic <- c(p - quantis * sqrt((p*q)/nn),p + quantis * sqrt((p*q)/nn))
+ return(ic)
+}
+p <- 0.37
+nn <- 184
+IC <- ic(p,nn)
+IC
+@
+
+$$
+IC(\hat{P}) = ( \Sexpr{round(IC[1],2)}; \Sexpr{round(IC[2],2)})
+$$
+
+%$$
+%{\displaystyle z=\left( \frac {e^{i\theta}+e^{-i\theta}}{2}\right)^2 +\left(\frac{e^{i\theta}-e^{-i\theta}}{2i} \right)^2}
+%$$
+
+\subsection{Amostragem Estratificada}
+\indent
+
+Este será o primeiro cenário para o plano amostral.\\
+\indent
+A amostragem estratificada consiste na divisão de uma população em grupos ou
+estratos segundo alguma característica conhecida na população em estudo.\\
+\indent
+Neste estudo ela será usada para a melhoria da precisão da estimativa da
+proporção de famílias que descartam corretamente o resíduo de cozinha.\\
+\indent
+Os estratos considerados serão os setores censitários definidos pelo IBGE
+no último censo de $2010$,
+\url{http://www.censo2010.ibge.gov.br/sinopseporsetores/?nivel=st}.\\
+\indent
+Dentro de cada estrato será realizada uma amostra aleatória simples sem reposição, 
+em que cada domicílio dentro dos estratos têm a mesma chance de ser escolhidos. 
+Para cálculo do tamanho da amostra. O bairro de Santa Felicidade possui $38$
+setores censitários, portanto teremos 38 estratos, como vemos na figura 1.\\
+\indent
+A expressão utilizada para determinar o tamanho na amostra, considerando
+estratos com população finita, será:\\
+
+\begin{equation}
+  n_{h} = \frac{N\hat{P}\hat{Q}Z^{2}}{\hat{P}\hat{Q}Z^{2}+(N+1)E^{2}}
+\end{equation}
+Em que:\\
+\indent
+
+\begin{itemize}
+\item $n_h$: tamanho da amostra do estrato \textit{h};
+\item Z: Quantil da distribuição (nível de significância) \textit{Normal};
+\item E: Erro amostral assumido.
+\end{itemize}
+
+<<echo=FALSE,results='hide'>>=
+#install.packages('sp')
+sapply(c("sp", "maptools", "spdep", "rgdal"), require, char=T)
+setwd("C:/Users/Ale/Desktop/R STUDIO/Isabel-master")
+
+#### lendo o mapa do estado do PR por setor censitário
+cwb<-readOGR("4106902.shp"
+            ,layer="4106902")
+##### lendo o mapa de Curitiba por bairro
+bairro<-readOGR("DIVISA_DE_BAIRROS.shp"
+               ,layer='DIVISA_DE_BAIRROS')
+
+@
+
+
+<<echo=FALSE, plot1, fig.cap='Bairro de Santa Felicidade \n por setores censitários'>>=
+### Plotando os mapas do Bairro de Santa Felicidade e dos setores censitários
+plot(bairro[bairro$NOME=='SANTA FELICIDADE',],
+     border='gray10', lwd=2, cex.main=0.85,
+     main='')
+box()
+plot(cwb[cwb$ID_==410690205050173,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_==410690205050180,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050172,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050177,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050178,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050179,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050175,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050176,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050170,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050169,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050174,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050168,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050165,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050167,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050150,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050160,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050166,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050149,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050159,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050148,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050142,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050143,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050158,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050146,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050155,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050155,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050147,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050156,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050157,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050141,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050152,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050144,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050145,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050161,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050153,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050154,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050164,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050163,],
+     border='gray10', lwd=1, add=T)
+plot(cwb[cwb$ID_== 410690205050162,],
+     border='gray10', lwd=1, add=T)
+@
+\indent
+
+<<echo=FALSE, results='hide'>>=
+#setwd("/home/felipe/Documentos/Consultoria/Isabel/Curitiba")
+dir(pattern='.csv')   # lista todos os arquivos com extensão .csv
+input <- dir(pattern='.csv')
+L <- length(input)
+
+for(i in 1:L)
+dados <- list(setor10=input[1],setor11=input[2],setor12=input[3],
+              setor13=input[4],setor14=input[5],setor15=input[6],
+              setor16=input[7],setor17=input[8],setor18=input[9],
+              setor19=input[10],setor1=input[11],setor20=input[12],
+              setor21=input[13],setor22=input[14],setor23=input[15],
+              setor24=input[16],setor25=input[17],setor26=input[18],
+              setor27=input[19],setor28=input[20],setor29=input[21],
+              setor2=input[22],setor30=input[23],setor31=input[24],
+              setor32=input[25],setor33=input[26],setor34=input[27],
+              setor35=input[28],setor36=input[29],setor37=input[30],
+              setor38=input[31],setor3=input[32],setor4=input[33],
+              setor5=input[34],setor6=input[35],setor7=input[36],
+              setor8=input[37],setor9=input[38])
+
+for (i in 1:L){
+    dados[[i]] <- read.csv(input[i],h=T,sep=',')
+    cat(input[i],'\n')
+}
+@
+
+\subsubsection{Variando erro amostral}
+\indent
+
+Cálculo do tamanho da amostra com erro amostral $0,03$, considerando o limite
+inferior do intervalo de confiança para $\hat{P}$.
+\indent
+
+<<echo=FALSE,results='hide'>>=
+N <- NULL
+for (i in 1:L)
+    N <- c(N,nrow(dados[[i]]))
+N
+sum(N)
+@
+
+<<echo=FALSE,results='hide'>>=
+p <- 0.3
+q <- 1-p
+z <- qnorm(0.975)
+E <- 0.03
+n <- NULL
+for (i in 1:L)
+    n <- c(n,(N[i]*p*q*z^2)/(p*q*z^2+((N[i]-1)*E^2)));n
+nf1 <- round(n,0);nf1
+nf1 <- matrix(nf1,byrow=F,ncol=38)
+colnames(nf1) <- c('n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11',
+                  'n12','n13','n14','n15','n16','n17','n18','n19','n20','n21'
+                 ,'n22','n23','n24','n25','n26','n27','n28','n29','n30','n31'
+                 ,'n32','n33','n34','n35','n36','n37','n38')
+rownames(nf1) <- c('')
+@
+
+<<echo=FALSE>>=
+nf1
+@
+
+Cálculo do tamanho da amostra com erro amostral $0,05$, considerando o limite
+inferior do intervalo de confiança para $\hat{P}$.
+
+<<echo=FALSE,results='hide'>>=
+E <- 0.05
+n2 <- NULL
+for (i in 1:L)
+n2 <- c(n2,(N[i]*p*q*z^2)/(p*q*z^2+((N[i]-1)*E^2)));n2
+nf2 <- round(n2,0);nf2
+nf2 <- matrix(nf2,byrow=F,ncol=38)
+colnames(nf2) <- c('n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11',
+                  'n12','n13','n14','n15','n16','n17','n18','n19','n20','n21'
+                 ,'n22','n23','n24','n25','n26','n27','n28','n29','n30','n31'
+                 ,'n32','n33','n34','n35','n36','n37','n38')
+rownames(nf2) <- c('')
+@
+
+<<echo=FALSE>>=
+nf2
+@
+
+Cálculo do tamanho da amostra com erro amostral $0,06$, considerando o limite
+inferior do intervalo de confiança para $\hat{P}$.
+<<echo=FALSE,results='hide'>>=
+E <- 0.06
+n <- NULL
+for (i in 1:L)
+n <- c(n,(N[i]*p*q*z^2)/(p*q*z^2+((N[i]-1)*E^2)));n
+nf3 <- round(n,0);nf3
+nf3 <- matrix(nf3,byrow=F,ncol=38)
+colnames(nf3) <- c('n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11',
+                  'n12','n13','n14','n15','n16','n17','n18','n19','n20','n21'
+                 ,'n22','n23','n24','n25','n26','n27','n28','n29','n30','n31'
+                 ,'n32','n33','n34','n35','n36','n37','n38')
+rownames(nf3) <- c('')
+@
+
+<<echo=FALSE>>=
+nf3
+@
+
+Cálculo do tamanho da amostra com erro amostral $0,08$, considerando o limite
+inferior do intervalo de confiança para $\hat{P}$.
+<<echo=FALSE,results='hide'>>=
+E <- 0.08
+n <- NULL
+for (i in 1:L)
+n <- c(n,(N[i]*p*q*z^2)/(p*q*z^2+((N[i]-1)*E^2)));n
+nf4 <- round(n,0);nf4
+nf4 <- matrix(nf4,byrow=F,ncol=38)
+colnames(nf4) <- c('n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11',
+                  'n12','n13','n14','n15','n16','n17','n18','n19','n20','n21'
+                 ,'n22','n23','n24','n25','n26','n27','n28','n29','n30','n31'
+                 ,'n32','n33','n34','n35','n36','n37','n38')
+rownames(nf4) <- c('')
+@
+
+<<echo=FALSE>>=
+nf4
+@
+
+Cálculo do tamanho da amostra com erro amostral $0,10$, considerando o limite
+inferior do intervalo de confiança para $\hat{P}$.
+<<echo=FALSE,results='hide'>>=
+E <- 0.1
+n <- NULL
+for (i in 1:L)
+n <- c(n,(N[i]*p*q*z^2)/(p*q*z^2+((N[i]-1)*E^2)));n
+nf5 <- round(n,0);nf5
+nf5 <- matrix(nf5,byrow=F,ncol=38)
+colnames(nf5) <- c('n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11',
+                  'n12','n13','n14','n15','n16','n17','n18','n19','n20','n21'
+                 ,'n22','n23','n24','n25','n26','n27','n28','n29','n30','n31'
+                 ,'n32','n33','n34','n35','n36','n37','n38')
+rownames(nf5) <- c('')
+@
+
+<<echo=FALSE>>=
+nf5
+@
+
+\subsection{Amostragem Aleatória Simples Sem Reposição}
+\indent
+
+A amostragem aleatória simples sem reposição (AASs) opera da seguinte forma e
+não há estratos, ou seja, os setores censitários não são considerados:
+\begin{itemize}
+  \item A população será do bairro será numerada de 1 a $N$;
+  \item Todos os elementos da população têm a mesma chance de
+    serem sorteados;
+  \item Sorteia-se um elemento de forma aleatória;
+  \item O próximo elemento é sorteado sendo que o anterior foi
+    retirado da população
+\end{itemize}
+
+\subsubsection{Variando o erro amostral}
+\indent
+Primeiro vamos calcular o tamanho da amostra como no cenário anterior,
+considerando vários erros amostrais. Sabemos que a população total do
+bairro é:\\
+\indent
+
+$N = 12174$ domicílios \\
+\indent
+
+<<echo=FALSE,results='hide'>>=
+N <- 12174
+#### erro igual 0,03
+E1 <- 0.03
+ne1 <- (N*p*q*z^2)/(p*q*z^2+((N-1)*E1^2));ne1
+
+#### erro igual 0,05
+E2 <- 0.05
+ne2 <- (N*p*q*z^2)/(p*q*z^2+((N-1)*E2^2));ne2
+
+#### erro igual 0,06
+E3 <- 0.06
+ne3 <- (N*p*q*z^2)/(p*q*z^2+((N-1)*E3^2));ne3
+
+#### erro igual 0,08
+E4 <- 0.08
+ne4 <- (N*p*q*z^2)/(p*q*z^2+((N-1)*E4^2));ne4
+
+#### erro igual 0,10
+E5 <- 0.1
+ne5 <- (N*p*q*z^2)/(p*q*z^2+((N-1)*E5^2));ne5
+@
+
+<<echo=FALSE>>=
+sam <-matrix(round(c(ne1, ne2, ne3, ne4, ne5),0),ncol=1,byrow=T)
+rownames(sam) <- c('Erro(0,03)','Erro(0,05)','Erro(0,06)','Erro(0,08)',
+                   'Erro(0,10)')
+colnames(sam) <- 'n'
+sam
+@
+
+\subsubsection{Variando o tamanho da amostra}
+\indent
+
+Aqui o tamanho da amostra será fixo e o erro amostral
+é calculado com base neste tamanho. Os valores fixos da amostra serão, 100, 300,
+500 e 1000.\\
+
+<<echo=FALSE>>=
+#### Amostra n=100
+n1 <- 100
+erro1 <- (sqrt(p*q)*z*sqrt(N-n1))/sqrt(n1*N-n1)
+
+#### Amostra n=300
+n2 <- 300
+erro2 <- (sqrt(p*q)*z*sqrt(N-n2))/sqrt(n2*N-n2)
+
+####  Amostra n=500
+n3 <- 500
+erro3 <- (sqrt(p*q)*z*sqrt(N-n3))/sqrt(n3*N-n3)
+
+####  Amostra n=1000
+n4 <- 1000
+erro4 <- (sqrt(p*q)*z*sqrt(N-n4))/sqrt(n4*N-n4)
+
+sam2 <-matrix(round(c(erro1, erro2, erro3, erro4),3),ncol=1,byrow=T)
+rownames(sam2) <- c('n=100','n=300','n=500','n=1000')
+colnames(sam2) <- 'Erro'
+sam2
+@
+
+\section{Considerações Finais}
+\indent
+
+O plano estratificado proporcional produz variâncias sempre menores que aquelas
+produzidas por uma amostra aleatória simples (com ou sem reposição) de mesmo
+tamanho, e este ganho é maior quanto maior for a variância dos estratos, isto é,
+quanto maior for a diferença entre as estimativas dos parâmetros dos estratos.
+Os cálculos das variâncias foram omitidas neste trabalho mas o conhecimento
+destes fatos é importante para o estatístico desenhar um plano amostral mais
+conveniente de acordo com a possibilidade de aplicação dos pesquisadores.
+
+\begin{thebibliography}{99}
+
+\bibitem{bryer2013likert} Bolfarine, H and Bussab, W.
+\emph{Elementos de Amostragem}.
+Editora Blucher-(2005).
+
+
+\bibitem{R} R Core Team (2016).
+\emph{R: A language and environment for statistical computing. R Foundation for
+  Statistical Computing}.
+Viena, Austria. \url{http://www.R-project.org/}.
+
+\bibitem{IBGE1} \url{http://www.censo2010.ibge.gov.br/sinopseporsetores/?nivel=st}.
+
+\bibitem{IBGE1} \url{http://www.censo2010.ibge.gov.br/cnefe/}.
+
+\end{thebibliography}
+
+\end{document}
+>>>>>>> 8bb94d7453127a5f39bc01a85a2914f71a4f81f5
