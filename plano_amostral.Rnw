@@ -335,7 +335,7 @@ sum(N)
 @
 
 <<echo=FALSE,results='hide'>>=
-p <- 0.3
+p <- 0.37
 q <- 1-p
 z <- qnorm(0.975)
 E <- 0.03
@@ -353,6 +353,7 @@ rownames(nf1) <- c('')
 
 <<echo=FALSE>>=
 nf1
+sum(nf1)
 @
 
 Cálculo do tamanho da amostra com erro amostral $0,05$, considerando o limite
@@ -521,6 +522,84 @@ colnames(sam2) <- 'Erro'
 sam2
 @
 
+
+\section{Cálculo da Variância e Efeito do Planejamento}
+\indent
+
+Cálculo da variância para o cenário da amostragem aleatória simples sem
+reposição consiredando erro amostral de $0,03$.\\
+\indent
+Um estimador não viciado (ou não-tendencioso), para $var(\hat{P})$ é dado
+pela expressão a seguir: (mais sobre propriedades dos estimadores veja: \url{http://www.leg.ufpr.br/~paulojus/embrapa/Rembrapa/Rembrapase19.html} )
+
+
+\begin{equation}
+var(P) = (1-f)\frac{\hat{P} \hat{Q}}{n-1}
+\end{equation}
+<<echo=FALSE>>=
+f <- 835/12174
+var.p <-(1-f)*(p*(1-p))/(835-1)
+#var.p
+@
+
+A variância para amostra aleatória simples sem reposição é:\\
+\indent
+<<echo=FALSE>>=
+var.p
+@
+
+
+<<echo=FALSE,results='hide'>>=
+N <- NULL
+for (i in 1:L)
+    N <- c(N,nrow(dados[[i]]))
+N
+sum(N)
+@
+
+As variâncias para cada um dos $38$ estratos da amostragem estratificada
+, também com erro amostral de $0,03$ são:\\
+
+<<echo=FALSE>>=
+var.pe <- NULL
+for (i in 1:38){
+    f[i] <- nf1[i]/N[i]
+    var.pe <-c(var.pe,(1-f[i])*(p*(1-p))/(nf1[i]-1))
+    }
+var.pe
+@
+
+<<echo=FALSE>>=
+parte1 <- NULL
+for (i in 1:38)
+    parte1 <- c(parte1,nf1[i]*var.pe[i])
+Var.P <- sum(parte1)/sum(nf1)
+#Var.P
+@
+
+Notadamente cada um dos estratos apresenta uma variância menor
+que o planejamento sem considerar estratos.\\
+\indent
+Agora é importante saber o quanto a amostra estratificada é \textit{"melhor"}
+, ou seja, o quanto este planejamento reduz a variância em compração ao
+planejamento sem estratos.\\
+\indent
+Para isso existe um conceito bastante importante que é o chamado
+\textit{design effect} ou efeito do planejamento que compara a variância
+dos dois plano:
+
+<<echo=FALSE>>=
+EPA <- Var.P/var.p
+#EPA
+@
+
+\begin{equation}
+  EPA = \frac{Var(\hat{P_{est}})}{Var(\hat{P_{AAs}})} = \Sexpr{round(EPA,2)}
+\end{equation}
+ Portanto, com o mesmo erro amostral, consegue diminuir a variância
+do estimador de $\hat{P}$ em aproximadamente $10\%$
+
+
 \section{Considerações Finais}
 \indent
 
@@ -528,9 +607,12 @@ O plano estratificado proporcional produz variâncias sempre menores que aquelas
 produzidas por uma amostra aleatória simples (com ou sem reposição) de mesmo
 tamanho, e este ganho é maior quanto maior for a variância dos estratos, isto é,
 quanto maior for a diferença entre as estimativas dos parâmetros dos estratos.
-Os cálculos das variâncias foram omitidas neste trabalho mas o conhecimento
-destes fatos é importante para o estatístico desenhar um plano amostral mais
+Este fato é importantes para o estatístico desenhar um plano amostral mais
 conveniente de acordo com a possibilidade de aplicação dos pesquisadores.
+
+
+
+
 
 \begin{thebibliography}{99}
 
@@ -547,6 +629,8 @@ Viena, Austria. \url{http://www.R-project.org/}.
 \bibitem{IBGE1} \url{http://www.censo2010.ibge.gov.br/sinopseporsetores/?nivel=st}.
 
 \bibitem{IBGE1} \url{http://www.censo2010.ibge.gov.br/cnefe/}.
+
+\bibitem{Est} \url{http://www.leg.ufpr.br/~paulojus/embrapa/Rembrapa/Rembrapase19.html}.
 
 \end{thebibliography}
 
